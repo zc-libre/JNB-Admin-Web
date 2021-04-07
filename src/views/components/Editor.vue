@@ -1,11 +1,9 @@
 <template>
-  <div class="app-container">
-    <el-row :gutter="10">
-      <el-col :xs="24" :sm="24" :md="15" :lg="15" :xl="15">
-        <div ref="editor" class="text" />
-      </el-col>
-    </el-row>
-  </div>
+  <el-row>
+    <el-col :xs="24" :sm="24" :md="15" :lg="15" :xl="15">
+      <div ref="editor" class="text" />
+    </el-col>
+  </el-row>
 </template>
 
 <script>
@@ -44,6 +42,7 @@ export default {
     }
     editor.customConfig.onchange = (html) => {
       this.editorContent = html
+      this.$emit('submit-text', html)
     }
     editor.create()
     // 初始化数据

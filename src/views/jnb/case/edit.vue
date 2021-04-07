@@ -1,6 +1,6 @@
 <template>
   <div class="app-container" style="margin-top: 20px;margin-left: 300px">
-    <el-form ref="ruleForm" :model="form" :label-position="labelPosition" :rules="rules">
+    <el-form ref="form" :model="form" :label-position="labelPosition" :rules="rules">
       <el-form-item label="案例标题">
         <el-input v-model="form.title" placeholder="请输入案例标题" style="width: 50%" />
       </el-form-item>
@@ -16,8 +16,8 @@
           <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
         </el-upload>
       </el-form-item>
-      <el-form-item label="案例内容" >
-        <editor v-model="form.content"/>
+      <el-form-item label="案例内容">
+        <editor v-model="form.content" />
       </el-form-item>
     </el-form>
   </div>
@@ -45,7 +45,7 @@ export default {
           { required: true, message: '图片不能为空', trigger: 'change' }
         ],
         content: [
-          { type: 'date', required: true, message: '内容不能为空', trigger: 'change' }
+          { required: true, message: '内容不能为空', trigger: 'change' }
         ]
       }
     }
