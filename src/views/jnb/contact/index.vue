@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="head-container">
       <el-row type="flex">
-        <el-input v-model="query.title" clearable placeholder="新闻标题" style="width: 185px;" class="filter-item" @keyup.enter.native="getDataList" />
+        <el-input v-model="query.name" clearable placeholder="联系人名称" style="width: 185px;" class="filter-item" @keyup.enter.native="getDataList" />
         <el-date-picker
           v-model="query.date"
           type="datetimerange"
@@ -20,23 +20,6 @@
         >搜索</el-button>
       </el-row>
       <span class="crud-opts-left">
-        <el-button
-          size="mini"
-          type="primary"
-          class="filter-item"
-          icon="el-icon-plus"
-        >新增</el-button>
-        <el-button
-          v-permission="['admin', 'excel:edit']"
-          class="filter-item"
-          size="mini"
-          type="success"
-          icon="el-icon-edit"
-          :disabled="editShowStatus"
-          @click="edit()"
-        >
-          修改
-        </el-button>
         <el-popconfirm
           confirm-button-text="好的"
           cancel-button-text="不用了"
@@ -80,39 +63,52 @@
                       width="55"
                     />
                     <el-table-column
-                      prop="title"
-                      label="新闻标题"
-                      width="400"
+                      prop="name"
+                      label="联系人姓名"
+                      width="200"
                     />
-                    <el-table-column prop="path" label="新闻首图">
-                      <template slot-scope="{row}">
-                        <el-image
-                          :src=" baseApi + '/file/图片/' + row.img"
-                          :preview-src-list="[baseApi + '/file/图片/' + row.img]"
-                          fit="contain"
-                          lazy
-                          class="el-avatar"
-                        >
-                          <div slot="error">
-                            <i class="el-icon-document" />
-                          </div>
-                        </el-image>
+                    <el-table-column
+                      prop="email"
+                      label="邮箱"
+                      width="200"
+                    />
+                    <el-table-column
+                      prop="phone"
+                      label="电话"
+                      width="200"
+                    />
+                    <el-table-column
+                      prop="content"
+                      label="内容"
+                      width="400"
+                    >
+                      <template slot-scope="scope">
+                        <el-link @click="open(scope.row.content)">{{ scope.row.content }}</el-link>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      prop="status"
+                      label="是否处理过"
+                    >
+                      <template slot-scope="scope">
+                        <el-switch
+                          v-model="scope.row.status"
+                          active-color="#13ce66"
+                          inactive-color="#ff4949"
+                          :active-value="1"
+                          :inactive-value="0"
+                          @change="statusChange(scope.row.status, scope.row.id)"
+                          @focus="statusFocus(scope.row.status)"
+                        />
                       </template>
                     </el-table-column>
                     <el-table-column
                       prop="createTime"
-                      label="创建时间"
-                      width="280"
+                      label="联系时间"
+                      width="180"
                     />
                     <el-table-column v-permission="['admin','excel:edit','excel:del']" label="操作" width="150px" align="center">
                       <template slot-scope="scope">
-                        <el-button
-                          v-permission="['admin','excel:edit']"
-                          size="mini"
-                          type="primary"
-                          icon="el-icon-edit"
-                          @click="toEdit(scope.row.id)"
-                        />
                         <el-popconfirm
                           confirm-button-text="好的"
                           cancel-button-text="不用了"
@@ -154,11 +150,11 @@
 </template>
 
 <script>
-import { list, batchDel } from '@/api/jnb/news'
+import { list, status, batchDel } from '@/api/jnb/contactus'
 import { parseTime } from '../../../utils/index'
 import { mapGetters } from 'vuex'
 export default {
-  name: 'NewsIndex',
+  name: 'ContactUs',
   data() {
     return {
       fullscreenLoading: false,
@@ -168,6 +164,10 @@ export default {
       totalCount: 10,
       fileList: [],
       tableData: [],
+      contact: {
+        id: '',
+        status: ''
+      },
       query: {
         title: '',
         date: [],
@@ -197,19 +197,25 @@ export default {
   },
 
   methods: {
-    edit() {
-      this.status = true
+    statusFocus(status) {
+      return status
     },
-    toEdit(id) {
-      this.$router.push({
-        path: `/jnb/news/news-edit`,
-        query: {
-          id: id
-        }
+    statusChange(val, id) {
+      this.contact.id = id
+      this.contact.status = val
+      status(JSON.stringify(this.contact)).then(res => {
+        this.$message({
+          message: '已处理！！',
+          type: 'success'
+        })
+      })
+    },
+    open(content) {
+      this.$alert(content, '联系内容详情', {
+        confirmButtonText: '确定'
       })
     },
     batchDelete() {
-      console.log(this.ids)
       batchDel(JSON.stringify(this.ids)).then(res => {
         this.$message({
           message: '删除成功！！',
@@ -245,7 +251,6 @@ export default {
       }
       this.delShowStatus = false
       this.editShowStatus = this.ids.length > 1
-      console.log(this.ids)
     },
     handleSizeChange(val) {
       this.limit = val
@@ -258,6 +263,7 @@ export default {
       this.query.start = parseTime(this.query.date[0], 'yyyy-MM-dd HH:mm:ss')
       this.query.end = parseTime(this.query.date[1], 'yyyy-MM-dd HH:mm:ss')
       var json = JSON.stringify(this.query)
+      console.log(json)
       list(json).then(res => {
         this.tableData = res.data.records
         this.totalCount = res.data.total

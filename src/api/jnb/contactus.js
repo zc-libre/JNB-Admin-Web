@@ -2,36 +2,38 @@ import request from '@/utils/request'
 
 export function submit(data) {
   return request({
-    url: '/api/jnb/admin/news/submit',
+    url: '/jnb/web/contact-us/submit',
     method: 'post',
     data
   })
 }
+
 export function list(data) {
   return request({
-    url: '/api/jnb/admin/news/list',
+    url: '/api/jnb/admin/contact-us/list',
     method: 'post',
     data
   })
 }
 
-export function typeList() {
+export function status(data) {
   return request({
-    url: '/api/jnb/admin/news/type/list',
-    method: 'get'
+    url: '/api/jnb/admin/contact-us/status',
+    method: 'post',
+    data
   })
 }
 
-export function detail(id) {
+export function count() {
   return request({
-    url: '/api/jnb/admin/news/detail/' + id,
+    url: '/api/jnb/admin/contact-us/count/',
     method: 'get'
   })
 }
 
 export function batchDel(data) {
   return request({
-    url: '/api/jnb/admin/news/delete',
+    url: '/api/jnb/admin/contact-us/delete',
     method: 'delete',
     data
   })
