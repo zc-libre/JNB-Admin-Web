@@ -71,6 +71,8 @@
                     element-loading-spinner="el-icon-loading"
                     element-loading-background="rgba(0, 0, 0, 0.8)"
                     highlight-current-row
+                    :header-cell-style="{textAlign: 'center'}"
+                    :cell-style="{ textAlign: 'center' }"
                     stripe
                     style="width: 100%"
                     @selection-change="handleSelectionChange"
@@ -84,7 +86,7 @@
                       label="新闻标题"
                       width="400"
                     />
-                    <el-table-column prop="path" label="新闻首图">
+                    <el-table-column prop="path" label="新闻首图" width="100">
                       <template slot-scope="{row}">
                         <el-image
                           :src=" baseApi + '/file/图片/' + row.img"
@@ -100,9 +102,19 @@
                       </template>
                     </el-table-column>
                     <el-table-column
+                      prop="typeName"
+                      label="新闻类型"
+                      width="200"
+                    />
+                    <el-table-column
                       prop="createTime"
                       label="创建时间"
-                      width="280"
+                      width="200"
+                    />
+                    <el-table-column
+                      prop="updateTime"
+                      label="最后修改时间"
+                      width="200"
                     />
                     <el-table-column v-permission="['admin','excel:edit','excel:del']" label="操作" width="150px" align="center">
                       <template slot-scope="scope">

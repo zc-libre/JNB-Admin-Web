@@ -5,7 +5,7 @@
         <img src="../assets/images/title.png" alt="">
       </div>
       <el-row>
-        <el-col :offset="4">
+        <el-col>
           <panel-group @handleSetLineChartData="handleSetLineChartData" />
         </el-col>
       </el-row>

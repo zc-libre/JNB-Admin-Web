@@ -127,7 +127,6 @@ export default {
         this.form = res.data
         this.imageList.push({ name: res.data.img, url: this.baseApi + '/file/图片/' + res.data.img })
         this.imgChange(null, this.imageList)
-        console.log(res.data)
       })
     }
     typeList().then(res => {

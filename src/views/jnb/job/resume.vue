@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="head-container">
       <el-row type="flex">
-        <el-input v-model="query.name" clearable placeholder="联系人名称" style="width: 185px;" class="filter-item" @keyup.enter.native="getDataList" />
+        <el-input v-model="query.name" clearable placeholder="职位名称" style="width: 185px;" class="filter-item" @keyup.enter.native="getDataList" />
         <el-date-picker
           v-model="query.date"
           type="datetimerange"
@@ -66,26 +66,54 @@
                     />
                     <el-table-column
                       prop="name"
-                      label="联系人姓名"
-                      width="200"
+                      label="姓名"
                     />
                     <el-table-column
-                      prop="email"
-                      label="邮箱"
-                      width="200"
+                      prop="gender"
+                      label="性别"
+                    />
+                    <el-table-column
+                      prop="birthday"
+                      label="出生日期"
+                      width="150"
                     />
                     <el-table-column
                       prop="phone"
                       label="电话"
-                      width="200"
+                      width="150"
                     />
                     <el-table-column
-                      prop="content"
-                      label="内容"
-                      width="400"
+                      prop="email"
+                      label="邮箱"
+                      width="150"
+                    />
+                    <el-table-column
+                      prop="address"
+                      label="籍贯"
+                    />
+                    <el-table-column
+                      prop="resume"
+                      label="简历附件"
+                      width="300"
                     >
                       <template slot-scope="scope">
-                        <el-link @click="open(scope.row.content)">{{ scope.row.content }}</el-link>
+                        <el-popover
+                          :content="'file/文档/' + scope.row.resume"
+                          placement="top-start"
+                          title="路径"
+                          width="200"
+                          trigger="hover"
+                        >
+                          <a
+                            slot="reference"
+                            :href="baseApi + '/file/文档/' + scope.row.resume"
+                            class="el-link--primary"
+                            style="word-break:keep-all;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color: #1890ff;font-size: 13px;"
+                            target="_blank"
+                          >
+                            {{ scope.row.resume }}
+                          </a>
+                        </el-popover>
                       </template>
                     </el-table-column>
                     <el-table-column
@@ -106,8 +134,8 @@
                     </el-table-column>
                     <el-table-column
                       prop="createTime"
-                      label="联系时间"
-                      width="180"
+                      label="创建时间"
+                      width="280"
                     />
                     <el-table-column v-permission="['admin','excel:edit','excel:del']" label="操作" width="150px" align="center">
                       <template slot-scope="scope">
@@ -152,11 +180,11 @@
 </template>
 
 <script>
-import { list, status, batchDel } from '@/api/jnb/contactus'
+import { list, batchDel, status } from '@/api/jnb/resume'
 import { parseTime } from '../../../utils/index'
 import { mapGetters } from 'vuex'
 export default {
-  name: 'ContactUs',
+  name: 'Resume',
   data() {
     return {
       fullscreenLoading: false,
@@ -166,22 +194,19 @@ export default {
       totalCount: 10,
       fileList: [],
       tableData: [],
-      contact: {
-        id: '',
-        status: ''
-      },
       query: {
-        title: '',
+        name: '',
+        age: '',
+        gender: '',
         date: [],
         page: '1',
         limit: '10',
         start: '',
         end: ''
       },
-      permission: {
-        add: ['admin', 'excel:add'],
-        edit: ['admin', 'excel:edit'],
-        del: ['admin', 'excel:del']
+      resume: {
+        id: '',
+        status: ''
       },
       ids: [],
       delShowStatus: true,
@@ -199,25 +224,18 @@ export default {
   },
 
   methods: {
-    statusFocus(status) {
-      return status
-    },
     statusChange(val, id) {
-      this.contact.id = id
-      this.contact.status = val
-      status(JSON.stringify(this.contact)).then(res => {
+      this.resume.id = id
+      this.resume.status = val
+      status(JSON.stringify(this.resume)).then(res => {
         this.$message({
-          message: '已处理！！',
+          message: '状态修改成功',
           type: 'success'
         })
       })
     },
-    open(content) {
-      this.$alert(content, '联系内容详情', {
-        confirmButtonText: '确定'
-      })
-    },
     batchDelete() {
+      console.log(this.ids)
       batchDel(JSON.stringify(this.ids)).then(res => {
         this.$message({
           message: '删除成功！！',
@@ -253,6 +271,7 @@ export default {
       }
       this.delShowStatus = false
       this.editShowStatus = this.ids.length > 1
+      console.log(this.ids)
     },
     handleSizeChange(val) {
       this.limit = val
@@ -265,7 +284,6 @@ export default {
       this.query.start = parseTime(this.query.date[0], 'yyyy-MM-dd HH:mm:ss')
       this.query.end = parseTime(this.query.date[1], 'yyyy-MM-dd HH:mm:ss')
       var json = JSON.stringify(this.query)
-      console.log(json)
       list(json).then(res => {
         this.tableData = res.data.records
         this.totalCount = res.data.total

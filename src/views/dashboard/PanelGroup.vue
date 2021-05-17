@@ -39,6 +39,19 @@
         </div>
       </div>
     </el-col>
+    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
+      <div class="card-panel" @click="handleSetLineChartData('messages')">
+        <div class="card-panel-icon-wrapper icon-message">
+          <svg-icon icon-class="skill" class-name="card-panel-icon" />
+        </div>
+        <div class="card-panel-description">
+          <div class="card-panel-text">
+            未处理简历数
+          </div>
+          <count-to :start-val="0" :end-val="resumeNum" class="card-panel-num" />
+        </div>
+      </div>
+    </el-col>
   </el-row>
 </template>
 
@@ -52,13 +65,15 @@ export default {
   data() {
     return {
       newsNum: 0,
-      contactPersonNum: 0
+      contactPersonNum: 0,
+      resumeNum: 0
     }
   },
   mounted() {
     count().then(res => {
       this.newsNum = res.data.newsNum
       this.contactPersonNum = res.data.contactPersonNum
+      this.resumeNum = res.data.resumeNum
     })
   },
   methods: {
